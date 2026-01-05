@@ -31,53 +31,6 @@ RoadEye는 국가교통정보센터(ITS)의 공공 데이터를 활용하여 사
 
 ---
 
-## 🏗️ 시스템 구성도 (System Architecture)
-
-서비스의 전체적인 흐름과 컴포넌트 간 연결 구조입니다.
-
-```mermaid
-graph TD
-    classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef frontend fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    classDef backend fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
-    classDef external fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,stroke-dasharray: 5 5;
-    classDef storage fill:#eceff1,stroke:#455a64,stroke-width:2px;
-
-    subgraph Client [사용자 환경]
-        Browser[웹 브라우저]:::client
-    end
-
-    subgraph Server [AWS Lightsail / Remote Server]
-        Apache[Apache Web Server]:::frontend
-        
-        subgraph Backend [Backend System]
-            API[FastAPI Server]:::backend
-            StreamEngine[Streaming Engine (FFmpeg)]:::backend
-        end
-        
-        subgraph Storage [File System]
-            StaticFiles[Static Assets]:::storage
-            HLSConnect[HLS Segments]:::storage
-        end
-    end
-
-    subgraph External [외부 API]
-        NaverAPI[네이버 지도 API]:::external
-        ITS[국가교통정보센터 ITS]:::external
-    end
-
-    Browser -- "HTTPS Request" --> Apache
-    Apache -- "Serve Production Build" --> StaticFiles
-    Browser -- "Load Maps" --> NaverAPI
-    Browser -- "API Calls / Stream Init" --> API
-    API -- "Fetch Data" --> ITS
-    StreamEngine -- "RTSP/HTTP Transcoding" --> ITS
-    StreamEngine -- "Write HLS Files" --> HLSConnect
-    Browser -- "Play Video (.m3u8)" --> HLSConnect
-```
-
----
-
 ## 🛠️ 기술 스택 (Tech Stack)
 
 ### Frontend
