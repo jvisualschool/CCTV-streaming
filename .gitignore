@@ -1,0 +1,64 @@
+# 환경 변수 및 인증 정보
+.env
+.env.local
+.env.*.local
+*.pem
+*key*
+*secret*
+*credential*
+*인증키*
+*인증*
+
+# 백엔드
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.venv/
+backend/venv/
+backend/*.pyc
+backend/**/*.pyc
+backend/.env
+backend/.env.local
+
+# 프론트엔드
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.vite/
+
+# IDE 및 OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# 로그 파일
+*.log
+logs/
+*.log.*
+
+# 임시 파일
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# 빌드 산출물
+*.egg-info/
+dist/
+build/
+*.whl
+
+# 테스트 커버리지
+.coverage
+htmlcov/
+.pytest_cache/
+
+# 기타
+*.db
+*.sqlite
+*.sqlite3
+

@@ -1,0 +1,52 @@
+```mermaid
+graph TD
+    %% 스타일 정의
+    classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef frontend fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef backend fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+    classDef external fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef storage fill:#eceff1,stroke:#455a64,stroke-width:2px;
+
+    %% 노드 정의
+    subgraph Client [사용자 환경]
+        Browser[웹 브라우저 (Chrome, Safari, Mobile)]:::client
+    end
+
+    subgraph Server [AWS Lightsail / Web Server]
+        Apache[Apache Web Server]:::frontend
+        
+        subgraph Backend [Backend System (FastAPI)]
+            API[API Server (Python/FastAPI)]:::backend
+            StreamEngine[Streaming Engine (FFmpeg)]:::backend
+        end
+        
+        subgraph Storage [File System]
+            StaticFiles[Static Files (HTML/JS/CSS)]:::storage
+            HLSConnect[HLS Segments (.ts/.m3u8)]:::storage
+        end
+    end
+
+    subgraph External [외부 API 및 데이터]
+        NaverAPI[네이버 지도 API (Maps)]:::external
+        ITS[국가교통정보센터 (CCTV Video/Info)]:::external
+    end
+
+    %% 연결 관계
+    Browser -- "1. 웹 페이지 요청 (HTTPS)" --> Apache
+    Apache -- "2. 정적 파일 제공" --> StaticFiles
+    
+    Browser -- "3. 지도 로드" --> NaverAPI
+    
+    Browser -- "4. API 요청 (/api/cctv/nearby)" --> API
+    API -- "5. CCTV 메타데이터 요청" --> ITS
+    
+    Browser -- "6. 스트리밍 요청" --> API
+    API -- "7. 스트림 변환 시작" --> StreamEngine
+    StreamEngine -- "8. RTSP/HTTP 스트림 수신" --> ITS
+    StreamEngine -- "9. HLS 세그먼트 저장" --> HLSConnect
+    
+    Browser -- "10. HLS 영상 재생 (.m3u8)" --> HLSConnect
+    
+    %% 주석 및 배치
+    linkStyle default stroke-width:1px,fill:none,stroke:#333;
+```

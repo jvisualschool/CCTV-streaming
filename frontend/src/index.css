@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #020617;
+    color: #f1f5f9;
+    /* slate-100 */
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Video.js Modern Skin Overrides */
+.vjs-custom-skin.video-js {
+  font-family: 'Inter', sans-serif;
+}
+
+.vjs-custom-skin .vjs-big-play-button {
+  background-color: rgba(59, 130, 246, 0.3) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  width: 80px !important;
+  height: 80px !important;
+  line-height: 80px !important;
+  margin-top: -40px !important;
+  margin-left: -40px !important;
+}
+
+.vjs-custom-skin .vjs-control-bar {
+  background: rgba(15, 23, 42, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  height: 60px !important;
+  padding: 0 10px !important;
+}
+
+.vjs-custom-skin .vjs-play-progress {
+  background-color: #3b82f6 !important;
+}
+
+.vjs-custom-skin .vjs-slider {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}

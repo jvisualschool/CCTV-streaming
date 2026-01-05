@@ -1,0 +1,82 @@
+```mermaid
+sequenceDiagram
+    autonumber
+    
+    actor User as 사용자 (User)
+    participant Frontend as Frontend (App.tsx)
+    participant BackendAPI as Backend API (FastAPI)
+    participant StreamingSvc as Streaming Service
+    participant ExternalITS as ITS/Extermal Server
+    participant FFmpeg as FFmpeg Process
+
+    User->>Frontend: CCTV 마커 클릭 (선택)
+    activate Frontend
+    
+    rect rgb(240, 248, 255)
+    note right of Frontend: URL 프로토콜 확인 및 분기
+    
+    alt HTTPS URL (Direct Play)
+        Frontend->>Frontend: Secure URL 확인
+        Frontend->>User: VideoPlayer 표시 (Direct Play)
+    
+    else HTTP URL (Mixed Content Proxy)
+        Frontend->>BackendAPI: POST /api/stream/start_by_url {stream_url}
+        activate BackendAPI
+        BackendAPI->>StreamingSvc: start_stream(id, url)
+        activate StreamingSvc
+        
+        StreamingSvc->>StreamingSvc: Check existing process?
+        
+        par Stream Processing
+            StreamingSvc->>FFmpeg: Spawn Process (Input URL -> HLS)
+            activate FFmpeg
+            FFmpeg->>ExternalITS: Pull Stream (HTTP/RTSP)
+            ExternalITS-->>FFmpeg: Video Data
+            FFmpeg->>FFmpeg: Transcode/Copy to .ts/.m3u8
+        end
+        
+        StreamingSvc-->>BackendAPI: Return HLS Path (/api/stream/{id}/index.m3u8)
+        deactivate StreamingSvc
+        
+        BackendAPI-->>Frontend: { hls_url: "..." }
+        deactivate BackendAPI
+        
+        Frontend->>User: VideoPlayer 표시 (HLS Playback)
+        
+        loop HLS Segment Fetching
+            Frontend->>BackendAPI: GET /api/stream/{id}/index.m3u8
+            BackendAPI->>Frontend: Playlist File
+            Frontend->>BackendAPI: GET /api/stream/{id}/segment_0.ts
+            BackendAPI->>Frontend: Media Segment
+        end
+
+    else No URL (ID-based Lookup)
+        Frontend->>BackendAPI: POST /api/stream/start/{cctv_id}
+        activate BackendAPI
+        BackendAPI->>ExternalITS: get_nearby_cctvs / Search by ID
+        ExternalITS-->>BackendAPI: CCTV Info (incl. URL)
+        BackendAPI->>StreamingSvc: start_stream(id, found_url)
+        
+        rect rgb(255, 250, 240)
+            note right of StreamingSvc: Start FFmpeg (Same as above)
+            StreamingSvc->>FFmpeg: Spawn Process
+        end
+        
+        StreamingSvc-->>BackendAPI: Return HLS Path
+        BackendAPI-->>Frontend: { hls_url }
+        deactivate BackendAPI
+        Frontend->>User: VideoPlayer 표시
+    end
+    end
+
+    User->>Frontend: 모달 닫기 (Close)
+    Frontend->>BackendAPI: POST /api/stream/stop/{id}
+    activate BackendAPI
+    BackendAPI->>StreamingSvc: stop_stream(id)
+    StreamingSvc->>FFmpeg: Kill Process
+    deactivate FFmpeg
+    StreamingSvc-->>BackendAPI: Stopped
+    BackendAPI-->>Frontend: { status: "stopped" }
+    deactivate BackendAPI
+    deactivate Frontend
+```
